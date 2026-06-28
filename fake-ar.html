@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>우당탕탕 추리게임 - AR 인터페이스 테스트</title>
+  <style>
+    :root {
+      --bg: #07080c;
+      --panel: rgba(12, 16, 28, 0.78);
+      --panel-strong: rgba(12, 16, 28, 0.92);
+      --text: #f7f7fb;
+      --muted: #aab0c0;
+      --accent: #7cf7d4;
+      --danger: #ff5b6e;
+      --warning: #ffd166;
+      --line: rgba(255, 255, 255, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(124, 247, 212, 0.09), transparent 34%),
+        linear-gradient(180deg, #0b0d14 0%, #05060a 100%);
+    }
+
+    #camera {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000;
+      transform: scaleX(-1);
+    }
+
+    body.environment #camera {
+      transform: none;
+    }
+
+    .fallback-bg {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(124, 247, 212, 0.14), transparent 38%),
+        linear-gradient(180deg, #10131f, #06070b);
+    }
+
+    .fallback-bg.hidden {
+      display: none;
+    }
+
+    .fallback-bg h1 {
+      margin: 0 0 10px;
+      font-size: 24px;
+    }
+
+    .fallback-bg p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .scan-lines {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 100% 5px;
+      mix-blend-mode: screen;
+      opacity: 0.28;
+    }
+
+    .vignette {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.78);
+    }
+
+    .top-bar {
+      position: absolute;
+      top: env(safe-area-inset-top, 0);
+      left: 0;
+      right: 0;
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      z-index: 5;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(8px);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--danger);
+      box-shadow: 0 0 12px var(--danger);
+    }
+
+    .dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .reticle {
+      pointer-events: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(68vw, 340px);
+      height: min(68vw, 340px);
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(124, 247, 212, 0.55);
+      border-radius: 22px;
+      box-shadow:
+        0 0 0 999px rgba(0,0,0,0.16),
+        0 0 28px rgba(124,247,212,0.14);
+      z-index: 3;
+    }
+
+    .reticle::before,
+    .reticle::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px dashed rgba(124, 247, 212, 0.35);
+      border-radius: 16px;
+    }
+
+    .corner {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      border-color: var(--accent);
+      opacity: 0.92;
+    }
+
+    .corner.tl { top: -2px; left: -2px; border-top: 4px solid; border-left: 4px solid; border-radius: 18px 0 0 0; }
+    .corner.tr { top: -2px; right: -2px; border-top: 4px solid; border-right: 4px solid; border-radius: 0 18px 0 0; }
+    .corner.bl { bottom: -2px; left: -2px; border-bottom: 4px solid; border-left: 4px solid; border-radius: 0 0 0 18px; }
+    .corner.br { bottom: -2px; right: -2px; border-bottom: 4px solid; border-right: 4px solid; border-radius: 0 0 18px 0; }
+
+    .scan-beam {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      box-shadow: 0 0 18px var(--accent);
+      animation: scan 2.4s ease-in-out infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes scan {
+      0%, 100% { transform: translateY(0); opacity: 0.35; }
+      50% { transform: translateY(calc(min(68vw, 340px) - 50px)); opacity: 1; }
+    }
+
+    .target-label {
+      position: absolute;
+      bottom: -44px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.58);
+      border: 1px solid rgba(124,247,212,0.45);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--accent);
+      white-space: nowrap;
+      backdrop-filter: blur(8px);
+    }
+
+    .clue-card {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: calc(env(safe-area-inset-bottom, 0) + 92px);
+      background: var(--panel-strong);
+      border: 1px solid rgba(124, 247, 212, 0.36);
+      border-radius: 22px;
+      padding: 16px;
+      z-index: 6;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
+      transform: translateY(120%);
+      opacity: 0;
+      transition: 0.38s ease;
+      backdrop-filter: blur(16px);
+    }
+
+    .clue-card.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .clue-card .eyebrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .clue-card h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .clue-card p {
+      margin: 0;
+      line-height: 1.62;
+      color: #e9edf7;
+      font-size: 14px;
+    }
+
+    .clue-code {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(124, 247, 212, 0.08);
+      border: 1px solid rgba(124, 247, 212, 0.23);
+    }
+
+    .clue-code strong {
+      font-size: 24px;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+    }
+
+    .controls {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: env(safe-area-inset-bottom, 0);
+      padding: 14px 16px 18px;
+      z-index: 7;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.54));
+    }
+
+    button, a.button {
+      appearance: none;
+      border: 0;
+      border-radius: 16px;
+      padding: 14px 12px;
+      font-weight: 800;
+      font-size: 14px;
+      color: #07110f;
+      background: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    button.secondary, a.secondary {
+      background: rgba(255,255,255,0.12);
+      color: var(--text);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+
+    button.warning {
+      background: var(--warning);
+      color: #211700;
+    }
+
+    .toast {
+      position: absolute;
+      top: calc(env(safe-area-inset-top, 0) + 62px);
+      left: 16px;
+      right: 16px;
+      z-index: 8;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(0,0,0,0.72);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: 0.26s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .status-panel {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: calc(env(safe-area-inset-top, 0) + 62px);
+      z-index: 4;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px 14px;
+      backdrop-filter: blur(14px);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .status-panel b {
+      color: var(--accent);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (min-width: 720px) {
+      .clue-card {
+        width: 420px;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, 120%);
+      }
+
+      .clue-card.show {
+        transform: translate(-50%, 0);
+      }
+
+      .controls {
+        width: 520px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        border-radius: 26px 26px 0 0;
+      }
+
+      .status-panel,
+      .toast {
+        width: 460px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+      }
+
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .toast {
+        transform: translateX(-50%) translateY(-8px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <video id="camera" autoplay playsinline muted></video>
+
+    <div id="fallback" class="fallback-bg">
+      <div>
+        <h1>AR 인터페이스 테스트</h1>
+        <p>카메라 권한을 허용하면 화면 위에 단서 UI가 표시됩니다.<br />이 버전은 타겟 이미지 없이 테스트하는 가짜 AR입니다.</p>
+      </div>
+    </div>
+
+    <div class="scan-lines"></div>
+    <div class="vignette"></div>
+
+    <div class="top-bar">
+      <div class="chip"><span id="cameraDot" class="dot"></span><span id="cameraStatus">카메라 대기</span></div>
+      <div class="chip">DEMO AR · No Target</div>
+    </div>
+
+    <div id="toast" class="toast">안내 메시지</div>
+
+    <div id="statusPanel" class="status-panel">
+      <b>사용법</b><br />
+      이 화면은 실제 이미지 인식 없이, 카메라 화면 위에 AR 느낌의 단서 UI를 띄우는 테스트입니다.
+      숙소에서는 참가자가 특정 물건을 비추는 척하고 <b>[스캔 완료]</b>를 누르면 됩니다.
+    </div>
+
+    <div class="reticle">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <div class="scan-beam"></div>
+      <div class="target-label">물건을 프레임 안에 맞추세요</div>
+    </div>
+
+    <section id="clueCard" class="clue-card" aria-live="polite">
+      <div class="eyebrow">AR CLUE DETECTED</div>
+      <h2>숨겨진 단서 발견</h2>
+      <p>
+        사진 속 네 번째 사람의 이름은 기록에 남아 있지 않습니다.
+        진술서의 시간과 비교해보세요.
+      </p>
+      <div class="clue-code">
+        <span>획득 코드</span>
+        <strong>1035</strong>
+      </div>
+    </section>
+
+    <div class="controls">
+      <button id="startCameraBtn">카메라 시작</button>
+      <button id="simulateBtn" class="warning">스캔 완료</button>
+      <button id="switchCameraBtn" class="secondary">카메라 전환</button>
+      <a class="button secondary" href="./mystery_demo.html">게임으로 복귀</a>
+    </div>
+  </div>
+
+  <script>
+    const camera = document.getElementById("camera");
+    const fallback = document.getElementById("fallback");
+    const startCameraBtn = document.getElementById("startCameraBtn");
+    const switchCameraBtn = document.getElementById("switchCameraBtn");
+    const simulateBtn = document.getElementById("simulateBtn");
+    const clueCard = document.getElementById("clueCard");
+    const toast = document.getElementById("toast");
+    const cameraDot = document.getElementById("cameraDot");
+    const cameraStatus = document.getElementById("cameraStatus");
+    const statusPanel = document.getElementById("statusPanel");
+
+    let currentStream = null;
+    let facingMode = "environment";
+    let clueVisible = false;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function setCameraStatus(active, text) {
+      cameraDot.classList.toggle("active", active);
+      cameraStatus.textContent = text;
+    }
+
+    async function startCamera() {
+      stopCamera();
+
+      try {
+        const constraints = {
+          video: {
+            facingMode: { ideal: facingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        };
+
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        camera.srcObject = currentStream;
+        fallback.classList.add("hidden");
+        document.body.classList.toggle("environment", facingMode === "environment");
+        setCameraStatus(true, facingMode === "environment" ? "후면 카메라" : "전면 카메라");
+        showToast("카메라가 시작되었습니다. 물건을 비춘 뒤 [스캔 완료]를 눌러보세요.");
+      } catch (error) {
+        console.error(error);
+        fallback.classList.remove("hidden");
+        setCameraStatus(false, "카메라 실패");
+        showToast("카메라를 시작하지 못했습니다. HTTPS 또는 localhost에서 열었는지 확인하세요.");
+      }
+    }
+
+    function stopCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+      currentStream = null;
+    }
+
+    function simulateScan() {
+      clueVisible = !clueVisible;
+      clueCard.classList.toggle("show", clueVisible);
+      statusPanel.classList.toggle("hidden", clueVisible);
+
+      if (clueVisible) {
+        localStorage.setItem("arDemoClueFound", "true");
+        showToast("AR 단서가 발견되었습니다. 코드 1035가 저장되었습니다.");
+      } else {
+        showToast("AR 단서를 다시 숨겼습니다.");
+      }
+    }
+
+    startCameraBtn.addEventListener("click", startCamera);
+
+    switchCameraBtn.addEventListener("click", async () => {
+      facingMode = facingMode === "environment" ? "user" : "environment";
+      await startCamera();
+    });
+
+    simulateBtn.addEventListener("click", simulateScan);
+
+    window.addEventListener("beforeunload", stopCamera);
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraStatus(false, "미지원");
+      showToast("이 브라우저는 카메라 API를 지원하지 않습니다.");
+    }
+  </script>
+</body>
+</html>

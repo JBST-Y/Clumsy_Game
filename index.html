@@ -1,91 +1,159 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>여행 성향 케미 테스트</title>
-  <style>
-    :root{
-      --bg:#fff8ef; --card:#ffffff; --text:#191919; --sub:#707070;
-      --line:#ece5dc; --main:#ff7a45; --main-dark:#e85d2c;
-      --soft:#fff1e8; --dark:#202020;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;
-      background:linear-gradient(180deg,#fff7ec 0%,#fffdf9 100%);color:var(--text)
-    }
-    .wrap{min-height:100vh;display:flex;justify-content:center;padding:24px 16px 48px}
-    .app{width:100%;max-width:520px}
-    .card{
-      background:var(--card);border-radius:26px;padding:28px 22px;
-      box-shadow:0 14px 40px rgba(75,48,26,.09);border:1px solid rgba(0,0,0,.03)
-    }
-    .logo{
-      display:inline-block;padding:7px 12px;border-radius:999px;background:var(--soft);
-      color:var(--main-dark);font-size:13px;font-weight:800;margin-bottom:16px
-    }
-    h1{margin:0 0 12px;font-size:31px;line-height:1.28;letter-spacing:-1px}
-    h2{margin:0 0 16px;font-size:24px;line-height:1.45;letter-spacing:-.5px}
-    p{margin:0;color:var(--sub);line-height:1.7}
-    .hero{text-align:center;padding-top:12px}
-    .emoji{font-size:58px;margin:12px 0 16px}
-    .notice{
-      margin:20px 0;padding:15px 16px;border-radius:16px;background:#faf8f5;
-      color:#645f58;font-size:14px;line-height:1.65;border:1px solid #eee7df
-    }
-    .danger{background:#fff2ec;border-color:#ffc9b4;color:#9a3d19}
-    button{
-      width:100%;border:0;border-radius:16px;padding:16px;font-size:16px;
-      font-weight:800;cursor:pointer;transition:.15s ease
-    }
-    button:active{transform:scale(.985)}
-    .primary{background:var(--main);color:white;margin-top:18px}
-    .primary:hover{background:var(--main-dark)}
-    .option{
-      background:#fff;border:1px solid var(--line);color:#2d2d2d;
-      margin-top:10px;text-align:left;min-height:56px
-    }
-    .option:hover{background:#fff9f4;border-color:#ffd0bc}
-    .name-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
-    .name-btn{background:#fff;border:1px solid var(--line);color:#222;padding:15px 12px}
-    .name-btn strong{display:block;font-size:17px}
-    .name-btn span{display:block;color:#909090;font-size:12px;margin-top:3px}
-    .progress-wrap{margin-bottom:25px}
-    .progress-top{display:flex;justify-content:space-between;font-size:13px;color:#8a8178;margin-bottom:8px}
-    .progress{height:9px;background:#f0ebe5;border-radius:999px;overflow:hidden}
-    .progress>div{height:100%;background:linear-gradient(90deg,#ff9b70,#ff6b36);transition:width .25s ease}
-    .qtag{color:var(--main-dark);font-size:14px;font-weight:900;margin-bottom:8px}
-    .loading{text-align:center;padding:24px 0 8px}
-    .spinner{
-      width:52px;height:52px;border:5px solid #f1e7df;border-top-color:var(--main);
-      border-radius:50%;margin:0 auto 20px;animation:spin .9s linear infinite
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .mission-card{
-      margin:20px 0;border:2px dashed var(--main);border-radius:20px;
-      padding:22px 18px;background:#fffaf7
-    }
-    .mission-card .title{font-weight:900;font-size:20px;color:var(--main-dark);margin-bottom:10px}
-    .mission-card .mission{font-size:18px;line-height:1.7;font-weight:800}
-    .check{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.55;color:#585858;margin-top:18px}
-    .check input{margin-top:3px;transform:scale(1.25)}
-    button:disabled{opacity:.45;cursor:not-allowed}
-    .result-top{text-align:center}
-    .type-badge{
-      display:inline-block;padding:8px 13px;background:var(--soft);color:var(--main-dark);
-      border-radius:999px;font-size:13px;font-weight:900;margin-bottom:12px
-    }
-    .type-name{font-size:31px;font-weight:950;line-height:1.35;margin-bottom:10px}
-    .team{margin-top:24px;background:var(--dark);border-radius:22px;color:white;padding:23px 18px;text-align:center}
-    .team small{display:block;color:#bdbdbd;margin-bottom:6px}
-    .team strong{display:block;font-size:34px;letter-spacing:1px}
-    .locked{text-align:center;padding:20px 0}
-    .locked .emoji{font-size:52px}
-    .admin-reset{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);display:none}
-    .admin-reset button{background:#eeeeee;color:#333;margin-top:8px}
-    .small{font-size:12px;color:#9a9a9a;margin-top:16px;line-height:1.55}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>여행 성향 케미 테스트</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#fff8ef;
+  --card:#fff;
+  --text:#191919;
+  --sub:#707070;
+  --line:#ece5dc;
+  --main:#ff7a45;
+  --main-dark:#e85d2c;
+  --soft:#fff1e8;
+  --dark:#202020;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;
+  background:linear-gradient(180deg,#fff7ec 0%,#fffdf9 100%);
+  color:var(--text);
+}
+.wrap{min-height:100vh;display:flex;justify-content:center;padding:24px 16px 48px}
+.app{width:100%;max-width:520px}
+.card{
+  background:var(--card);
+  border-radius:26px;
+  padding:28px 22px;
+  box-shadow:0 14px 40px rgba(75,48,26,.09);
+  border:1px solid rgba(0,0,0,.03);
+}
+.logo{
+  display:inline-block;
+  padding:7px 12px;
+  border-radius:999px;
+  background:var(--soft);
+  color:var(--main-dark);
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:16px;
+}
+h1{margin:0 0 12px;font-size:31px;line-height:1.28;letter-spacing:-1px}
+h2{margin:0 0 16px;font-size:24px;line-height:1.45;letter-spacing:-.5px}
+p{margin:0;color:var(--sub);line-height:1.7}
+.hero{text-align:center;padding-top:12px}
+.emoji{font-size:58px;margin:12px 0 16px}
+.notice{
+  margin:20px 0;
+  padding:15px 16px;
+  border-radius:16px;
+  background:#faf8f5;
+  color:#645f58;
+  font-size:14px;
+  line-height:1.65;
+  border:1px solid #eee7df;
+}
+.danger{background:#fff2ec;border-color:#ffc9b4;color:#9a3d19}
+button{
+  width:100%;
+  border:0;
+  border-radius:16px;
+  padding:16px;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.15s ease;
+}
+button:active{transform:scale(.985)}
+.primary{background:var(--main);color:#fff;margin-top:18px}
+.primary:hover{background:var(--main-dark)}
+.option{
+  background:#fff;
+  border:1px solid var(--line);
+  color:#2d2d2d;
+  margin-top:10px;
+  text-align:left;
+  min-height:56px;
+}
+.option:hover{background:#fff9f4;border-color:#ffd0bc}
+.secondary{
+  background:#f3f3f3;
+  color:#333;
+  margin-top:10px;
+}
+.name-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.name-btn{background:#fff;border:1px solid var(--line);color:#222;padding:15px 12px}
+.name-btn strong{display:block;font-size:17px}
+.name-btn span{display:block;color:#909090;font-size:12px;margin-top:3px}
+.progress-wrap{margin-bottom:25px}
+.progress-top{display:flex;justify-content:space-between;font-size:13px;color:#8a8178;margin-bottom:8px}
+.progress{height:9px;background:#f0ebe5;border-radius:999px;overflow:hidden}
+.progress>div{height:100%;background:linear-gradient(90deg,#ff9b70,#ff6b36);transition:width .25s ease}
+.qtag{color:var(--main-dark);font-size:14px;font-weight:900;margin-bottom:8px}
+.loading{text-align:center;padding:24px 0 8px}
+.spinner{
+  width:52px;height:52px;
+  border:5px solid #f1e7df;
+  border-top-color:var(--main);
+  border-radius:50%;
+  margin:0 auto 20px;
+  animation:spin .9s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.count{
+  font-size:42px;
+  font-weight:950;
+  text-align:center;
+  margin:22px 0 8px;
+}
+.selected-name{
+  text-align:center;
+  font-size:28px;
+  font-weight:950;
+  margin:12px 0 4px;
+}
+.mission-card{
+  margin:20px 0;
+  border:2px dashed var(--main);
+  border-radius:20px;
+  padding:22px 18px;
+  background:#fffaf7;
+}
+.mission-title{font-weight:950;font-size:23px;color:var(--main-dark);margin-bottom:10px}
+.mission-body{font-size:17px;line-height:1.75;font-weight:700}
+.rules{
+  margin-top:18px;
+  background:#fff;
+  border:1px solid #f1d9ce;
+  border-radius:16px;
+  padding:16px;
+}
+.rules div{margin:8px 0;font-weight:700;line-height:1.55}
+.check{
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:14px;line-height:1.55;color:#585858;margin-top:18px
+}
+.check input{margin-top:3px;transform:scale(1.25)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.result-top{text-align:center}
+.type-badge{
+  display:inline-block;padding:8px 13px;background:var(--soft);color:var(--main-dark);
+  border-radius:999px;font-size:13px;font-weight:900;margin-bottom:12px
+}
+.type-name{font-size:31px;font-weight:950;line-height:1.35;margin-bottom:10px}
+.team{
+  margin-top:24px;background:var(--dark);border-radius:22px;color:#fff;padding:23px 18px;text-align:center
+}
+.team small{display:block;color:#bdbdbd;margin-bottom:6px}
+.team strong{display:block;font-size:34px;letter-spacing:1px}
+.small{font-size:12px;color:#9a9a9a;margin-top:16px;line-height:1.55}
+.hidden{display:none!important}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -95,244 +163,260 @@
 </div>
 
 <script>
-const participants = {
-  A: { name:"유동연", team:"TEAM 1" },
-  B: { name:"이인규", team:"TEAM 1" },
-  C: { name:"이두하", team:"TEAM 1" },
-  D: { name:"제갈준탁", team:"TEAM 1" },
-  E: { name:"김영웅", team:"TEAM 2" },
-  F: { name:"최민규", team:"TEAM 2" },
-  G: { name:"정민교", team:"TEAM 2" },
-  H: { name:"오종인", team:"TEAM 2" }
-};
+const SUPABASE_URL = "https://hywhteajhqfcthcrpjpz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Ey5IbdF2Olk4tjD0tZLwRg_MXFPxH15";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const missions = {
-  A: "팀원 전원의 뜨거운 아메리카노를 사오기. 성공하면 추후 팀 승리 시 구제 기회가 존재합니다.",
-  B: "팀원 전원의 뜨거운 아메리카노를 사오기. 성공하면 추후 팀 승리 시 구제 기회가 존재합니다.",
-  C: "목적지 도착 전 화장실에 3번 이상 들렀다 오기. 방문할 때마다 세면대에서 셀카를 찍어 증거를 남기세요.",
-  D: "목적지 도착 전 화장실에 3번 이상 들렀다 오기. 방문할 때마다 세면대에서 셀카를 찍어 증거를 남기세요."
+const participants = {
+  A:{name:"유동연"},
+  B:{name:"이인규"},
+  C:{name:"이두하"},
+  D:{name:"제갈준탁"},
+  E:{name:"김영웅"},
+  F:{name:"최민규"},
+  G:{name:"정민교"},
+  H:{name:"오종인"}
 };
 
 const friendNames = ["유동연","이인규","이두하","제갈준탁","김영웅","최민규","정민교","오종인"];
 const driverNames = ["정민교","이두하","최민규","최유석","이준","오종인"];
 
 const questions = [
-  {
-    title:"여행을 떠난다면?",
-    options:[
-      {text:"산 ⛰️", score:{adventure:1, calm:1}},
-      {text:"바다 🌊", score:{freedom:1, social:1}}
-    ]
+  { title:"여행을 떠난다면?", options:[
+    {text:"산 ⛰️",score:{adventure:1,calm:1}},
+    {text:"바다 🌊",score:{freedom:1,social:1}}
+  ]},
+  { title:"여행 중 역할을 하나 맡는다면?", options:[
+    {text:"일정 구성",score:{plan:2}},
+    {text:"총무",score:{detail:2}},
+    {text:"맛집 탐색",score:{experience:2}},
+    {text:"분위기 담당",score:{social:2}}
+  ]},
+  { title:"보기 중 운전을 제일 잘한다고 생각하는 사람은?", options:
+    driverNames.map(x=>({text:x,score:{}}))
   },
-  {
-    title:"여행 중 역할을 하나 맡는다면?",
-    options:[
-      {text:"일정 구성", score:{plan:2}},
-      {text:"총무", score:{detail:2}},
-      {text:"맛집 탐색", score:{experience:2}},
-      {text:"분위기 담당", score:{social:2}}
-    ]
-  },
-  {
-    title:"보기 중 운전을 제일 잘한다고 생각하는 사람은?",
-    options: driverNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"만약 1박 2일 여행을 간다면 예상 여행 비용은?",
-    options:[
-      {text:"5만원 이하", score:{detail:2}},
-      {text:"5만 ~ 10만원", score:{detail:1, balance:1}},
-      {text:"10만 ~ 15만원", score:{balance:2}},
-      {text:"15만 ~ 20만원", score:{experience:1, comfort:1}},
-      {text:"20만원 이상", score:{experience:2}}
-    ]
-  },
-  {
-    title:"여행 계획을 세울 때 나는?",
-    options:[
-      {text:"숙소랑 이동수단만 예약하면 끝", score:{freedom:2}},
-      {text:"가고 싶은 곳 정도는 정리해둔다", score:{balance:2}},
-      {text:"휴가를 망칠 수 없지. 분 단위 계획도 가능", score:{plan:3}}
-    ]
-  },
-  {
-    title:"내가 묵고 싶은 숙소는?",
-    options:[
-      {text:"사람들이랑 어울리는 게스트하우스", score:{social:2}},
-      {text:"사진부터 찍고 싶은 뷰 맛집 숙소", score:{experience:2}},
-      {text:"잘 곳만 있으면 된다. 거의 노숙도 가능", score:{adventure:2}},
-      {text:"침대 좋고 조용한 편안한 숙소", score:{comfort:2}}
-    ]
-  },
-  {
-    title:"친구들 중 가장 고집이 센 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"친구들 중 여행 분위기를 가장 잘 띄울 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"친구들 중 여행 약속에 가장 늦게 올 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"친구들 중 여행비 정산을 가장 꼼꼼하게 할 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"친구들 중 길을 잘못 들었을 때 가장 먼저 짜증낼 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"친구들 중 갑자기 계획을 바꾸자고 할 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"친구들 중 맛집 웨이팅 1시간도 버틸 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"친구들 중 여행 사진을 제일 많이 찍을 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  },
-  {
-    title:"마지막 질문! 이번 여행에서 가장 큰 변수를 만들 것 같은 사람은?",
-    options: friendNames.map(x => ({text:x, score:{}}))
-  }
+  { title:"만약 1박 2일 여행을 간다면 예상 여행 비용은?", options:[
+    {text:"5만원 이하",score:{detail:2}},
+    {text:"5만 ~ 10만원",score:{detail:1,balance:1}},
+    {text:"10만 ~ 15만원",score:{balance:2}},
+    {text:"15만 ~ 20만원",score:{experience:1,comfort:1}},
+    {text:"20만원 이상",score:{experience:2}}
+  ]},
+  { title:"여행 계획을 세울 때 나는?", options:[
+    {text:"숙소랑 이동수단만 잡으면 준비 끝",score:{freedom:2}},
+    {text:"가고 싶은 곳 정도는 미리 정리한다",score:{balance:2}},
+    {text:"휴가를 망칠 순 없지. 시간대별 계획까지 세운다",score:{plan:3}}
+  ]},
+  { title:"내가 묵고 싶은 숙소는?", options:[
+    {text:"처음 보는 사람들과도 놀 수 있는 게스트하우스",score:{social:2}},
+    {text:"창문 열자마자 감탄 나오는 뷰 맛집 숙소",score:{experience:2}},
+    {text:"잠만 자면 됨. 숙소에 돈 쓰는 건 아깝다",score:{adventure:2}},
+    {text:"침대 좋고 조용하고 편안한 숙소",score:{comfort:2}},
+    {text:"수영장, 바비큐장 등 놀거리가 많은 숙소",score:{experience:1,social:1}}
+  ]},
+  { title:"친구들 중 가장 고집이 센 사람은?", options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:"여행 분위기를 가장 잘 띄울 것 같은 사람은?", options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:"약속 시간에 가장 늦게 올 것 같은 사람은?", options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:"여행비 정산을 가장 꼼꼼하게 할 것 같은 사람은?", options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:"길을 잘못 들었을 때 가장 먼저 짜증낼 것 같은 사람은?", options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:'갑자기 "야 여기 가보자" 하면서 계획을 바꿀 것 같은 사람은?', options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:"맛집 웨이팅 1시간도 끝까지 버틸 것 같은 사람은?", options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:"여행 사진을 제일 많이 찍을 것 같은 사람은?", options:friendNames.map(x=>({text:x,score:{}})) },
+  { title:"이번 여행에서 가장 큰 변수를 만들 것 같은 사람은?", options:friendNames.map(x=>({text:x,score:{}})) }
 ];
 
 const app = document.getElementById("app");
-let userCode = null;
+let userCode = localStorage.getItem("travelChemistryUser");
+let sessionToken = localStorage.getItem("travelChemistryToken");
+let lobbyTimer = null;
 let current = 0;
-let answers = [];
 let scores = {adventure:0,calm:0,freedom:0,social:0,plan:0,detail:0,experience:0,balance:0,comfort:0};
 
-function isLocked(){ return localStorage.getItem("travelChemistryDeviceLocked") === "true"; }
-function getSavedUser(){ return localStorage.getItem("travelChemistryUser"); }
+function setHtml(html){ app.innerHTML = html; }
 
 function renderIntro(){
-  if(isLocked()){ renderLocked(); return; }
-  app.innerHTML = `
+  setHtml(`
     <div class="hero">
       <div class="logo">TRAVEL CHEMISTRY TEST</div>
       <div class="emoji">🧳✈️</div>
       <h1>여행 성향<br>케미 테스트</h1>
-      <p>우리는 같이 여행 가도 괜찮을까?<br>나의 여행 성향과 친구들과의 케미를 분석해<br>가장 잘 맞는 팀을 알려드릴게요.</p>
+      <p>친구들과 여행을 떠난다면 나는 어떤 여행 스타일일까?<br><br>
+      간단한 질문을 통해 나의 여행 성향과 친구들과의 케미를 분석하고 가장 잘 맞는 팀을 찾아드립니다.</p>
     </div>
     <div class="notice">예상 소요 시간 약 5분<br>다른 사람과 상의하지 말고 솔직하게 답해주세요.</div>
     <button class="primary" onclick="renderNameSelect()">테스트 시작하기</button>
-    <div class="small">한 기기당 1회만 참여할 수 있습니다.</div>
-    <div class="admin-reset" id="adminReset"><button onclick="resetTest()">테스트 기록 초기화</button></div>
-  `;
-  if(new URLSearchParams(location.search).get("admin") === "1"){
-    document.getElementById("adminReset").style.display = "block";
-  }
+  `);
 }
 
-function renderNameSelect(){
-  app.innerHTML = `
+function renderNameSelect(message=""){
+  stopLobbyPolling();
+  setHtml(`
     <div class="logo">STEP 1</div>
-    <h2>본인의 이름을 선택해주세요</h2>
-    <p>시작하면 참가자 변경이 불가능합니다.<br>반드시 본인 이름을 선택해주세요.</p>
+    <h2>먼저 본인을 선택해주세요</h2>
+    <p>테스트 결과의 정확도를 위해 반드시 본인의 이름을 선택해주세요.</p>
+    ${message ? `<div class="notice danger">${message}</div>` : ""}
     <div class="name-grid">
-      ${Object.entries(participants).map(([code,p]) => `
+      ${Object.entries(participants).map(([code,p])=>`
         <button class="name-btn" onclick="confirmName('${code}')">
           <strong>${p.name}</strong><span>${code}</span>
-        </button>`).join("")}
+        </button>
+      `).join("")}
     </div>
-  `;
+  `);
 }
 
 function confirmName(code){
-  const p = participants[code];
-  app.innerHTML = `
+  setHtml(`
     <div class="logo">CONFIRM</div>
-    <h2>${p.name} 님이 맞나요?</h2>
-    <div class="notice danger">시작 이후에는 이름을 변경하거나<br>다른 사람의 테스트를 확인할 수 없습니다.</div>
-    <button class="primary" onclick="startTest('${code}')">네, 시작할게요</button>
-    <button class="option" onclick="renderNameSelect()">아니요, 다시 선택할게요</button>
-  `;
+    <h2>${participants[code].name} 님이 맞나요?</h2>
+    <div class="notice">테스트 시작 전까지는 다시 선택할 수 있습니다.</div>
+    <button class="primary" onclick="claimPlayer('${code}')">네, 맞습니다</button>
+    <button class="secondary" onclick="renderNameSelect()">다시 선택하기</button>
+  `);
 }
 
-function startTest(code){
+async function claimPlayer(code){
+  setHtml(`<div class="loading"><div class="spinner"></div><h2>참가자 확인 중...</h2></div>`);
+
+  const { data, error } = await supabaseClient.rpc("claim_travel_player",{p_code:code});
+
+  if(error){
+    renderNameSelect("서버 연결에 실패했습니다. 다시 시도해주세요.");
+    return;
+  }
+
+  const row = Array.isArray(data) ? data[0] : data;
+
+  if(!row || !row.success){
+    renderNameSelect(row?.message || "이미 선택된 참가자입니다.");
+    return;
+  }
+
   userCode = code;
-  localStorage.setItem("travelChemistryDeviceLocked","true");
-  localStorage.setItem("travelChemistryUser",code);
-  localStorage.setItem("travelChemistryStatus","in_progress");
-  current = 0;
-  answers = [];
-  Object.keys(scores).forEach(k => scores[k] = 0);
-  renderQuestion();
+  sessionToken = row.session_token;
+  localStorage.setItem("travelChemistryUser",userCode);
+  localStorage.setItem("travelChemistryToken",sessionToken);
+
+  renderLobby();
+}
+
+async function renderLobby(){
+  const name = participants[userCode]?.name || "";
+  setHtml(`
+    <div class="logo">WAITING ROOM</div>
+    <h2>참가자 확인 완료</h2>
+    <div class="selected-name">${name}</div>
+    <p style="text-align:center">위 이름으로 참가 신청되었습니다.</p>
+    <div class="count" id="lobbyCount">0 / 8</div>
+    <p style="text-align:center">모든 참가자의 선택이 완료되면<br>여행 성향 케미 테스트가 시작됩니다.</p>
+    <div class="notice" id="lobbyMsg">다른 참가자를 기다리고 있습니다...</div>
+    <button class="secondary" onclick="requestReselect()">다시 선택하기</button>
+  `);
+
+  await pollLobby();
+  lobbyTimer = setInterval(pollLobby, 1800);
+}
+
+async function pollLobby(){
+  const { data, error } = await supabaseClient.rpc("get_travel_lobby_state");
+  if(error || !data) return;
+
+  const row = data[0];
+  const count = row?.claimed_count ?? data.filter(x=>x.claimed).length;
+  const ready = row?.ready ?? count===8;
+
+  const countEl = document.getElementById("lobbyCount");
+  const msgEl = document.getElementById("lobbyMsg");
+  if(countEl) countEl.textContent = `${count} / 8`;
+
+  if(ready){
+    stopLobbyPolling();
+    if(msgEl) msgEl.innerHTML = "모든 참가자의 확인이 완료되었습니다.<br>잠시 후 테스트가 시작됩니다.";
+    startCountdown();
+  }
+}
+
+function stopLobbyPolling(){
+  if(lobbyTimer){ clearInterval(lobbyTimer); lobbyTimer = null; }
+}
+
+function startCountdown(){
+  let n = 3;
+  const timer = setInterval(()=>{
+    setHtml(`
+      <div class="hero">
+        <div class="logo">READY</div>
+        <h2>모든 참가자의 확인이 완료되었습니다!</h2>
+        <p>잠시 후 여행 성향 케미 테스트가 시작됩니다.</p>
+        <div class="count">${n}</div>
+      </div>
+    `);
+    n--;
+    if(n < 0){
+      clearInterval(timer);
+      current = 0;
+      Object.keys(scores).forEach(k=>scores[k]=0);
+      renderQuestion();
+    }
+  },700);
+}
+
+async function requestReselect(){
+  if(!confirm("현재 선택을 취소하고 다시 본인을 선택할까요?")) return;
+
+  const oldCode = userCode;
+  const oldToken = sessionToken;
+
+  setHtml(`
+    <div class="loading">
+      <div class="spinner"></div>
+      <h2>선택을 취소하고 있어요</h2>
+    </div>
+  `);
+
+  const { data, error } = await supabaseClient.rpc("release_travel_player",{
+    p_code:oldCode,
+    p_token:oldToken
+  });
+
+  if(error || data !== true){
+    renderLobby();
+    alert("선택 취소에 실패했습니다. 다시 시도하거나 제작진에게 알려주세요.");
+    return;
+  }
+
+  localStorage.removeItem("travelChemistryUser");
+  localStorage.removeItem("travelChemistryToken");
+  userCode = null;
+  sessionToken = null;
+  renderNameSelect();
 }
 
 function renderQuestion(){
-  if(current >= questions.length){ renderAnalysis(); return; }
+  if(current >= questions.length){
+    renderAnalysis();
+    return;
+  }
+
   const q = questions[current];
   const percent = Math.round((current / questions.length) * 100);
-  app.innerHTML = `
+
+  setHtml(`
     <div class="progress-wrap">
-      <div class="progress-top"><span>${current + 1} / ${questions.length}</span><span>${percent}%</span></div>
+      <div class="progress-top"><span>${current+1} / ${questions.length}</span><span>${percent}%</span></div>
       <div class="progress"><div style="width:${percent}%"></div></div>
     </div>
-    <div class="qtag">Q${current + 1}</div>
+    <div class="qtag">Q${current+1}</div>
     <h2>${q.title}</h2>
     ${q.options.map((o,i)=>`<button class="option" onclick="choose(${i})">${o.text}</button>`).join("")}
-  `;
+  `);
 }
 
 function choose(index){
   const option = questions[current].options[index];
-  answers.push(option.text);
-  Object.entries(option.score || {}).forEach(([k,v])=>{ scores[k] = (scores[k] || 0) + v; });
+  Object.entries(option.score||{}).forEach(([k,v])=>scores[k]=(scores[k]||0)+v);
   current++;
   renderQuestion();
-}
-
-function renderAnalysis(){
-  app.innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      <h2>여행 성향을 분석하고 있어요</h2>
-      <p>여행 취향 분석 중...<br>친구 케미 분석 중...<br>최적 팀 조합 계산 중...</p>
-    </div>`;
-  setTimeout(()=>{
-    if(missions[userCode] && localStorage.getItem("missionSeen_"+userCode) !== "true"){
-      renderMission();
-    }else{ finish(); }
-  },1800);
-}
-
-function renderMission(){
-  const p = participants[userCode];
-  app.innerHTML = `
-    <div class="logo">SPECIAL NOTICE</div>
-    <h2>${p.name}님에게만<br>추가 안내가 도착했습니다</h2>
-    <div class="notice danger">
-      이 화면은 <strong>지금 단 한 번만</strong> 확인할 수 있습니다.<br>
-      다음 화면으로 넘어가면 다시 볼 수 없습니다.<br>
-      반드시 정확하게 기억해주세요.
-    </div>
-    <div class="mission-card">
-      <div class="title">SECRET ACTION</div>
-      <div class="mission">${missions[userCode]}</div>
-    </div>
-    <p>다른 참가자에게 이 화면을 보여주거나<br>미션의 존재를 직접 알려서는 안 됩니다.</p>
-    <label class="check">
-      <input id="remember" type="checkbox" onchange="toggleMissionBtn()">
-      <span>미션 내용을 정확히 기억했으며, 다음 화면으로 넘어간 뒤 다시 확인할 수 없다는 것을 이해했습니다.</span>
-    </label>
-    <button class="primary" id="missionBtn" disabled onclick="acceptMission()">기억했습니다. 결과 확인하기</button>
-  `;
-}
-
-function toggleMissionBtn(){
-  document.getElementById("missionBtn").disabled = !document.getElementById("remember").checked;
-}
-
-function acceptMission(){
-  localStorage.setItem("missionSeen_"+userCode,"true");
-  finish();
 }
 
 function getPersonality(){
@@ -352,56 +436,231 @@ function getPersonality(){
   return types[key] || types.balance;
 }
 
-function finish(){
-  const personality = getPersonality();
-  const result = { user:userCode, personality, team:participants[userCode].team };
-  localStorage.setItem("travelChemistryStatus","completed");
-  localStorage.setItem("travelChemistryResult",JSON.stringify(result));
-  renderResult(result);
+function renderAnalysis(){
+  setHtml(`
+    <div class="loading">
+      <div class="spinner"></div>
+      <h2>여행 성향을 분석하고 있어요</h2>
+      <p>여행 취향 분석 중...<br>소비 성향 분석 중...<br>친구 관계 분석 중...<br>여행 케미 분석 중...<br>최적 팀 조합 계산 중...</p>
+    </div>
+  `);
+
+  setTimeout(checkMission,2200);
 }
 
-function renderResult(result){
-  app.innerHTML = `
-    <div class="result-top">
-      <div class="type-badge">TRAVEL TYPE</div>
-      <div class="emoji">🎒</div>
-      <div class="type-name">${result.personality.name}</div>
-      <p>${result.personality.desc}</p>
-    </div>
-    <div class="team">
-      <small>친구 케미 분석 결과</small>
-      <strong>${result.team}</strong>
-    </div>
-    <div class="notice" style="margin-top:20px">팀 배정이 완료되었습니다.<br>화면을 유지한 채 제작진의 안내를 기다려주세요.</div>
-  `;
-}
+async function checkMission(){
+  const { data, error } = await supabaseClient.rpc("get_travel_player_state",{
+    p_code:userCode,
+    p_token:sessionToken
+  });
 
-function renderLocked(){
-  const raw = localStorage.getItem("travelChemistryResult");
-  if(raw){ renderResult(JSON.parse(raw)); return; }
-  const code = getSavedUser();
-  app.innerHTML = `
-    <div class="locked">
-      <div class="emoji">🔒</div>
-      <h2>이미 테스트를 시작한 기기입니다</h2>
-      <p>이 기기는 ${code ? participants[code].name : "참가자"} 님의 테스트에 등록되어 있습니다.<br>다른 참가자의 테스트를 열 수 없습니다.</p>
-    </div>
-    <div class="admin-reset" id="adminReset"><button onclick="resetTest()">테스트 기록 초기화</button></div>
-  `;
-  if(new URLSearchParams(location.search).get("admin") === "1"){
-    document.getElementById("adminReset").style.display = "block";
+  if(error || !data || !data.length){
+    setHtml(`<h2>오류가 발생했습니다</h2><p>참가자 정보를 확인할 수 없습니다. 제작진에게 알려주세요.</p>`);
+    return;
+  }
+
+  const state = data[0];
+
+  if(state.has_mission && !state.mission_seen && state.mission_text){
+    renderMissionIntro(state);
+  }else{
+    completeAndShowResult();
   }
 }
 
-function resetTest(){
-  if(!confirm("이 기기의 테스트 기록을 전부 초기화할까요?")) return;
-  Object.keys(localStorage)
-    .filter(k => k.startsWith("travelChemistry") || k.startsWith("missionSeen_"))
-    .forEach(k => localStorage.removeItem(k));
-  location.href = location.pathname + "?admin=1";
+function renderMissionIntro(state){
+  window._missionState = state;
+
+  setHtml(`
+    <div class="logo">PERSONAL MISSION</div>
+    <h2>개인미션이 도착했습니다.</h2>
+
+    <div class="notice danger">
+      지금부터 표시되는 내용은 <strong>당신의 개인 승리조건</strong>입니다.<br><br>
+      <strong>이 개인미션은 팀의 승리 또는 패배와 관련이 없습니다.</strong><br><br>
+      개인 승리를 위해서는 주어진 미션을 성공하고,
+      다른 참가자에게 개인미션을 들키지 않아야 합니다.
+    </div>
+
+    <p>이 화면은 단 한 번만 확인할 수 있습니다.<br>
+    다음 화면으로 넘어가면 다시 확인할 수 없으니 반드시 정확히 기억해주세요.</p>
+
+    <button class="primary" onclick="renderMissionDetail()">개인미션 확인하기</button>
+  `);
 }
 
-renderIntro();
+function renderMissionDetail(){
+  const code = userCode;
+
+  if(code==="A" || code==="B"){
+    setHtml(`
+      <div class="logo">PERSONAL MISSION</div>
+      <div class="mission-card">
+        <div class="mission-title">뜨거운 아메리카노 4잔을 구매하라</div>
+        <div class="mission-body">
+          여행이 종료되기 전까지 <strong>뜨거운 아메리카노 4잔을 구매하세요.</strong><br><br>
+          구매 사실을 확인할 수 있도록 <strong>영수증을 반드시 챙겨야 합니다.</strong>
+        </div>
+
+        <div class="rules">
+          <div>① 뜨거운 아메리카노 4잔 구매</div>
+          <div>② 구매 영수증 보관</div>
+          <div>③ 다른 참가자에게 개인미션을 들키지 않기</div>
+        </div>
+
+        <div class="notice danger">
+          위 조건을 모두 만족해야 개인미션 성공입니다.<br><br>
+          <strong>이 개인미션은 팀의 승리 또는 패배와 관련이 없습니다.</strong><br><br>
+          단, 개인미션에는 실패했지만 개인미션의 존재를 끝까지 들키지 않았고
+          본인의 팀이 최종 승리한 경우 구제 기회가 주어집니다.
+        </div>
+      </div>
+
+      <label class="check">
+        <input id="remember" type="checkbox" onchange="toggleMissionBtn()">
+        <span>개인미션과 승리조건을 정확히 기억했습니다.</span>
+      </label>
+
+      <button class="primary" id="missionBtn" disabled onclick="finishMission()">기억했습니다</button>
+    `);
+    return;
+  }
+
+  if(code==="C" || code==="D"){
+    setHtml(`
+      <div class="logo">PERSONAL MISSION</div>
+      <div class="mission-card">
+        <div class="mission-title">서로 다른 화장실 4곳에서 인증 사진을 남겨라</div>
+        <div class="mission-body">
+          최종 목적지에 도착하기 전까지
+          <strong>서로 다른 장소의 화장실을 4곳 이상 방문하세요.</strong><br><br>
+          각 화장실의 세면대 앞에서
+          <strong>본인이 나온 셀카를 촬영해야 합니다.</strong>
+        </div>
+
+        <div class="rules">
+          <div>① 서로 다른 화장실 4곳 이상 방문</div>
+          <div>② 각 장소에서 세면대 셀카 촬영</div>
+          <div>③ 다른 참가자에게 개인미션을 들키지 않기</div>
+        </div>
+
+        <div class="notice danger">
+          위 조건을 모두 만족해야 개인미션 성공입니다.<br><br>
+          <strong>이 개인미션은 팀의 승리 또는 패배와 관련이 없습니다.</strong><br><br>
+          팀이 승리하더라도 개인미션에 실패하면 개인 승리조건을 충족하지 못합니다.
+        </div>
+      </div>
+
+      <label class="check">
+        <input id="remember" type="checkbox" onchange="toggleMissionBtn()">
+        <span>개인미션과 승리조건을 정확히 기억했습니다.</span>
+      </label>
+
+      <button class="primary" id="missionBtn" disabled onclick="finishMission()">기억했습니다</button>
+    `);
+  }
+}
+
+function toggleMissionBtn(){
+  document.getElementById("missionBtn").disabled = !document.getElementById("remember").checked;
+}
+
+async function finishMission(){
+  await supabaseClient.rpc("mark_travel_mission_seen",{
+    p_code:userCode,
+    p_token:sessionToken
+  });
+  completeAndShowResult();
+}
+
+async function completeAndShowResult(){
+  const personality = getPersonality();
+
+  const { data, error } = await supabaseClient.rpc("complete_travel_test",{
+    p_code:userCode,
+    p_token:sessionToken,
+    p_personality:personality.name
+  });
+
+  if(error || !data || !data.length){
+    setHtml(`<h2>결과 저장 중 오류가 발생했습니다</h2><p>제작진에게 알려주세요.</p>`);
+    return;
+  }
+
+  const row = data[0];
+  renderPersonality(personality,row.team);
+}
+
+function renderPersonality(personality,team){
+  setHtml(`
+    <div class="result-top">
+      <div class="type-badge">TRAVEL TYPE</div>
+      <div class="emoji">🎒</div>
+      <div class="type-name">${personality.name}</div>
+      <p>${personality.desc}</p>
+    </div>
+
+    <div class="notice" style="margin-top:22px">
+      친구들의 선택과 여행 성향을 함께 분석하고 있습니다...
+    </div>
+  `);
+
+  setTimeout(()=>renderFinal(team),1600);
+}
+
+function renderFinal(team){
+  setHtml(`
+    <div class="result-top">
+      <div class="type-badge">YOUR TEAM</div>
+      <div class="emoji">🏁</div>
+      <h2>케미 분석 완료!</h2>
+    </div>
+
+    <div class="team">
+      <small>당신과 가장 케미가 잘 맞는 팀은</small>
+      <strong>${team}</strong>
+    </div>
+
+    <div class="notice danger" style="margin-top:20px">
+      <strong>아직 다른 참가자에게 자신의 팀을 공개하지 마세요.</strong><br><br>
+      모든 참가자의 테스트가 종료된 후 제작진의 안내에 따라 팀을 공개합니다.
+    </div>
+
+    <p style="text-align:center;font-weight:800;color:#333">이 화면을 그대로 유지해주세요.</p>
+  `);
+}
+
+async function boot(){
+  if(userCode && sessionToken){
+    const { data, error } = await supabaseClient.rpc("get_travel_player_state",{
+      p_code:userCode,
+      p_token:sessionToken
+    });
+
+    if(!error && data && data.length){
+      const state = data[0];
+
+      if(state.status==="claimed"){
+        renderLobby();
+        return;
+      }
+
+      if(state.status==="completed"){
+        // 완료 상태는 팀만 다시 확인 가능
+        renderFinal(state.team);
+        return;
+      }
+    }
+  }
+
+  localStorage.removeItem("travelChemistryUser");
+  localStorage.removeItem("travelChemistryToken");
+  userCode = null;
+  sessionToken = null;
+  renderIntro();
+}
+
+boot();
 </script>
 </body>
 </html>
